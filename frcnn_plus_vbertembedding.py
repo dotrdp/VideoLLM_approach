@@ -5,15 +5,23 @@ import io
 import numpy as np
 import PIL.Image
 import torch
-from proyection_layer import ProjectionLayer
 from IPython.display import Image, display
-
+from umap import UMAP
 from transformers import AutoTokenizer, VisualBertModel
 
 from importlib.machinery import SourceFileLoader
 utils = SourceFileLoader("utils", "NOTCODEDBYME/utils.py").load_module()
 visual_cues = SourceFileLoader("visual_cues", "NOTCODEDBYME/visual_cues.py").load_module()
 
+
+class ProjectionLayer:
+    def __init__(self):
+        self.umap = UMAP(n_components=30)
+    def forward(self, x):
+        x = x.cpu().detach().numpy()
+        x = self.umap.fit_transform(x)
+        return torch.tensor(x).to(torch.float32).cuda(device=0)
+    
 
 class FRCNN_VisualBert_Embedding:
     def __init__(self):
