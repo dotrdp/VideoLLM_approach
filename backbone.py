@@ -33,41 +33,4 @@ output_dict = frcnn(
     return_tensors="pt",
 )
 features = output_dict.get("roi_features")
-test_question = ["What can you see in the image?"]
-tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-uncased")
-model = VisualBertForVisualReasoning.from_pretrained("uclanlp/visualbert-nlvr2")
-
-inputs = tokenizer(
-    test_question,
-    padding="max_length",
-    max_length=20,
-    truncation=True,
-    return_token_type_ids=True,
-    return_attention_mask=True,
-    add_special_tokens=True,
-    return_tensors="pt",
-)
-
-
-
-text = "What can you see in the image?"
-inputs = tokenizer(text, return_tensors="pt")
-visual_embeds = features
-visual_token_type_ids = torch.ones(visual_embeds.shape[:-1], dtype=torch.long)
-visual_attention_mask = torch.ones(features.shape[:-1])
-
-inputs.update(
-    {
-        "visual_embeds": visual_embeds,
-        "visual_token_type_ids": visual_token_type_ids,
-        "visual_attention_mask": visual_attention_mask,
-    }
-)
-
-labels = torch.tensor(1).unsqueeze(0)  # Batch size 1, Num choices 2
-
-outputs = model(**inputs, labels=labels)
-loss = outputs.loss
-scores = outputs.logits
-
-print(outputs)
+print(features)
