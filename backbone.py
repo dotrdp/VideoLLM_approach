@@ -1,34 +1,30 @@
 # Assumption: *get_visual_embeddings(image)* gets the visual embeddings of the image in the batch.
-from transformers import AutoTokenizer, VisualBertForQuestionAnswering
+
+import io
+
+import numpy as np
+import PIL.Image
 import torch
-from visual_cues import *
+from IPython.display import Image, display
 
-tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-uncased")
-model = VisualBertForQuestionAnswering.from_pretrained("visualbert-vqa")
+from transformers import BertTokenizerFast, VisualBertForQuestionAnswering
 
-text = "Is there a cat in the image?"
+from importlib.machinery import SourceFileLoader
+utils = SourceFileLoader("utils", "NOTCODEDBYME/utils.py").load_module()
+visual_cues = SourceFileLoader("visual_cues", "NOTCODEDBYME/visual_cues.py").load_module()
 
-inputs = tokenizer(
-    text,
-    padding="max_length",
-    max_length=20,
-    truncation=True,
-    return_token_type_ids=True,
-    return_attention_mask=True,
-    add_special_tokens=True,
-    return_tensors="pt",
-)
-model2 = FRCNN()
-visual_embeds = model2.get_visual_embeddings("TEST.jpg")
-output_vqa = model(
-        input_ids=inputs.input_ids,
-        attention_mask=inputs.attention_mask,
-        visual_embeds=features,
-        visual_attention_mask=torch.ones(features.shape[:-1]),
-        token_type_ids=inputs.token_type_ids,
-        output_attentions=False,
-    )
-    # get prediction
-pred_vqa = output_vqa["logits"].argmax(-1)
-print("Question:", text)
-print("prediction from VisualBert VQA:", pred_vqa)
+frcnn_cfg = Config.from_pretrained("unc-nlp/frcnn-vg-finetuned")
+
+frcnn = GeneralizedRCNN.from_pretrained("unc-nlp/frcnn-vg-finetuned", config=frcnn_cfg)
+
+image_preprocess = Preprocess(frcnn_cfg)
+
+bert_tokenizer = BertTokenizerFast.from_pretrained("bert-base-uncased")
+visualbert_vqa = VisualBertForQuestionAnswering.from_pretrained("visualbert-vqa")
+
+def showarray(a, fmt="jpeg"):
+    a = np.uint8(np.clip(a, 0, 255))
+    f = io.BytesIO()
+    PIL.Image.fromarray(a).save(f, fmt)
+    display(Image(data=f.getvalue()))
+
