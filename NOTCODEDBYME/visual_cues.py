@@ -15,7 +15,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.import copy
 
-under no circumstances do I claim to have coded this. Code adapted from huggingface github.
+
+Copyright (c) 2018, Facebook, Inc. and its affiliates.
+All Rights Reserved
+UNDER NO CIRCUMSTANCE DO I CLAIM TO HAVE WRITTEN THIS CODE.
+THIS CODE IS A MODIFIED VERSION OF THE ORIGINAL CODE WRITTEN BY THE HUGGINGFACE TEAM AND FACEBOOK INC.
 """
 
 import itertools
