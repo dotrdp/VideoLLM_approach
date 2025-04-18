@@ -1736,10 +1736,7 @@ class GeneralizedRCNN(nn.Module):
                 msg = f"Can't load weights for '{pretrained_model_name_or_path}'."
                 raise EnvironmentError(msg)
 
-            if resolved_archive_file == archive_file:
-                print("loading weights file {}".format(archive_file))
-            else:
-                print("loading weights file {} from cache at {}".format(archive_file, resolved_archive_file))
+           
         else:
             resolved_archive_file = None
 
@@ -1804,21 +1801,8 @@ class GeneralizedRCNN(nn.Module):
                 f" {model.__class__.__name__} from the checkpoint of a model that you expect to be exactly identical"
                 " (initializing a BertForSequenceClassification model from a BertForSequenceClassification model)."
             )
-        else:
-            print(f"All model checkpoint weights were used when initializing {model.__class__.__name__}.\n")
-        if len(missing_keys) > 0:
-            print(
-                f"Some weights of {model.__class__.__name__} were not initialized from the model checkpoint at"
-                f" {pretrained_model_name_or_path} and are newly initialized: {missing_keys}\nYou should probably"
-                " TRAIN this model on a down-stream task to be able to use it for predictions and inference."
-            )
-        else:
-            print(
-                f"All the weights of {model.__class__.__name__} were initialized from the model checkpoint at"
-                f" {pretrained_model_name_or_path}.\nIf your task is similar to the task the model of the checkpoint"
-                f" was trained on, you can already use {model.__class__.__name__} for predictions without further"
-                " training."
-            )
+        
+        
         if len(error_msgs) > 0:
             raise RuntimeError(
                 "Error(s) in loading state_dict for {}:\n\t{}".format(

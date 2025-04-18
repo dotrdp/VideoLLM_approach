@@ -225,10 +225,7 @@ class Config:
             msg = "Can't load config for"
             raise EnvironmentError(msg)
 
-        if resolved_config_file == config_file:
-            print("loading configuration file from path")
-        else:
-            print("loading configuration file cache")
+        
 
         return Config.load_yaml(resolved_config_file), kwargs
 
@@ -238,8 +235,7 @@ def compare(in_tensor):
     out_tensor = torch.load("dump.pt", map_location=in_tensor.device)
     n1 = in_tensor.numpy()
     n2 = out_tensor.numpy()[0]
-    print(n1.shape, n1[0, 0, :5])
-    print(n2.shape, n2[0, 0, :5])
+
     assert np.allclose(n1, n2, rtol=0.01, atol=0.1), (
         f"{sum([1 for x in np.isclose(n1, n2, rtol=0.01, atol=0.1).flatten() if x is False])/len(n1.flatten())*100:.4f} %"
         " element-wise mismatch"
