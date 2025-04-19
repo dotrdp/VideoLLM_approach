@@ -1,0 +1,15 @@
+opencv-python
+numpy
+mediapy
+matplotlib
+Pillow
+wget
+transformers
+typing-extensions
+tqdm
+requests
+
+
+
+umap-learn
+scikit-learn
