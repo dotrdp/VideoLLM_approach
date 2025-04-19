@@ -1750,7 +1750,7 @@ class GeneralizedRCNN(nn.Module):
         if state_dict is None:
             try:
                 try:
-                    state_dict = torch.load(resolved_archive_file, map_location="cpu")
+                    state_dict = torch.load(resolved_archive_file, map_location="cpu", weights_only=True)
                 except Exception:
                     state_dict = load_checkpoint(resolved_archive_file)
 

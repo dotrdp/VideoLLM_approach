@@ -8,7 +8,9 @@ transformers
 typing-extensions
 tqdm
 requests
-
+ipykernel
+iprogress
+ipywidgets
 
 
 umap-learn
