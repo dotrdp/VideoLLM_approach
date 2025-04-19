@@ -509,8 +509,6 @@ def get_data(query, delim=","):
         with open(query) as f:
             data = f.read()
         data = data.split("\n")
-        print(data)
-        print(type(data))
     else:
         req = requests.get(query)
         try:
