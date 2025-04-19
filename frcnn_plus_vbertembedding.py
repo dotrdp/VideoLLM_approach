@@ -73,10 +73,10 @@ class FRCNN_VisualBert_Embedding:
         display(Image(data=f.getvalue()))
 
     def draw_boxes(self, path):
-        OBJ_URL = "https://raw.githubusercontent.com/airsplay/py-bottom-up-attention/master/demo/data/genome/1600-400-20/objects_vocab.txt"
-        ATTR_URL = "https://raw.githubusercontent.com/airsplay/py-bottom-up-attention/master/demo/data/genome/1600-400-20/attributes_vocab.txt"
-        objids = utils.get_data(OBJ_URL)
-        attrids = utils.get_data(ATTR_URL)
+        obj = "backbonelabelmap/objects_vocab.txt"
+        attr = "backbonelabelmap/attributes_vocab.txt"
+        objids = utils.get_data(obj)
+        attrids = utils.get_data(attr)
         frcnn_visualizer = vis.SingleImageViz(path, id2obj=objids, id2attr=attrids)
 
         images, sizes, scales_yx = self.image_preprocess(path)

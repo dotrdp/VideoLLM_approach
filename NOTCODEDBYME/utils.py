@@ -507,7 +507,10 @@ def get_data(query, delim=","):
     assert isinstance(query, str)
     if os.path.isfile(query):
         with open(query) as f:
-            data = eval(f.read())
+            data = f.read()
+        data = data.split("\n")
+        print(data)
+        print(type(data))
     else:
         req = requests.get(query)
         try:

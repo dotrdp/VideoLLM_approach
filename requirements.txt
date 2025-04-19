@@ -11,7 +11,7 @@ requests
 ipykernel
 iprogress
 ipywidgets
-
+importlib
 
 umap-learn
 scikit-learn
