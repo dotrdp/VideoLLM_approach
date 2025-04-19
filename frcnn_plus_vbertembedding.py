@@ -12,6 +12,7 @@ from transformers import AutoTokenizer, VisualBertModel
 from importlib.machinery import SourceFileLoader
 utils = SourceFileLoader("utils", "NOTCODEDBYME/utils.py").load_module()
 visual_cues = SourceFileLoader("visual_cues", "NOTCODEDBYME/visual_cues.py").load_module()
+vis = SourceFileLoader("visa", "NOTCODEDBYME/visa.py").load_module()
 
 
 class ProjectionLayer:
@@ -58,16 +59,54 @@ class FRCNN_VisualBert_Embedding:
 
         Embedding = model(**inputs).last_hidden_state
         Embedding = Embedding[0, :, :]
-        print(Embedding.shape)
         result = self.ProyectionLayer(Embedding)
         return result
     #
     def ProyectionLayer(self, Embedding):
         projection = self.ProjectionLayer.forward(Embedding)
         return projection
-        
-mod = FRCNN_VisualBert_Embedding()
-print(mod.forward("TEST.jpg", "a"))
+    
+    def BuildImage(self, output):
+        a = np.uint8(np.clip(output, 0, 255))
+        f = io.BytesIO()
+        PIL.Image.fromarray(a).save(f, "jpeg")
+        display(Image(data=f.getvalue()))
+
+    def draw_boxes(self, path):
+        OBJ_URL = "https://raw.githubusercontent.com/airsplay/py-bottom-up-attention/master/demo/data/genome/1600-400-20/objects_vocab.txt"
+        ATTR_URL = "https://raw.githubusercontent.com/airsplay/py-bottom-up-attention/master/demo/data/genome/1600-400-20/attributes_vocab.txt"
+        objids = utils.get_data(OBJ_URL)
+        attrids = utils.get_data(ATTR_URL)
+        frcnn_visualizer = vis.SingleImageViz(path, id2obj=objids, id2attr=attrids)
+
+        images, sizes, scales_yx = self.image_preprocess(path)
+        output_dict = self.frcnn(
+        images,
+        sizes,
+        scales_yx=scales_yx,
+        padding="max_detections",
+        max_detections=self.frcnn_cfg.max_detections,
+        return_tensors="pt",
+        )
+
+
+        frcnn_visualizer.draw_boxes(
+        output_dict.get("boxes"),
+        output_dict.pop("obj_ids"),
+        output_dict.pop("obj_probs"),
+        output_dict.pop("attr_ids"),
+        output_dict.pop("attr_probs"),
+        )
+        return frcnn_visualizer._get_buffer()
+    
+
+    def Draw(self, path):
+        try:
+            a = self.draw_boxes(path)
+            self.BuildImage(a)
+        except Exception as e:
+            print(e)
+            print("Error in drawing boxes")
 
 
 
