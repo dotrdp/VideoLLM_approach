@@ -60,7 +60,7 @@ def extract_frames(video_path, frames_dir, overwrite=False, start=-1, end=-1, ev
     return saved_count  # and return the count of the images we saved
 
 
-def video_to_frames(video_path, frames_dir, overwrite=False, every=1):
+def video_to_frames(video_path, frames_dir, overwrite=False, every=20):
     """
     Extracts the frames from a video
     :param video_path: path to the video
