@@ -1,6 +1,7 @@
 import json
 import mediapy as media
 from tqdm import tqdm
+import os
 def LoadActivityNetDataset():
     with open("data/activitynet/0_30_s_activitynetqa_oe_qa_processed.json", "r") as f:
         data = json.load(f)
@@ -108,3 +109,54 @@ def ShowVideo(video_path, dataset):
         media.show_video(video, title = "a", fps=5)
     else:
         raise ValueError("Invalid dataset name")
+def STARTFROMI(i, training_data, model, buffer_dataset, sources, names, video_to_frames):
+    try:
+     for i in tqdm(range(0, len(training_data)), desc="Running Backbone on the training dataset and storing the results"):
+      try:
+
+         prompt = training_data[i][0]
+         video = training_data[i][1]
+         video_to_frames((video), "temp")
+         if sources[i] == "youtube":
+
+               for frame in os.listdir("temp/ytb_"+names[i]+".mp4"):
+                  path = os.path.join("temp/ytb_"+names[i]+".mp4", frame)
+                  Embedding = model.forward(path, prompt)
+                  buffer_dataset.append(Embedding)
+                  os.remove(path)
+        
+                  print("remaning frames "+str(len(os.listdir("temp/ytb_"+names[i]+".mp4"))))
+         elif sources[i] == "activitynet":
+        
+               for frame in os.listdir("temp/"+names[i]+".mp4"):
+                  path = os.path.join("temp/"+names[i]+".mp4", frame)
+                  Embedding = model.forward(path, prompt)
+                  buffer_dataset.append(Embedding)
+                  os.remove(path)
+           
+                  print("remaning frames "+str(len(os.listdir("temp/"+names[i]+".mp4"))))
+         elif sources[i] == "NEXTQA":
+         
+            for frame in os.listdir("temp/"+names[i]+".mp4"):
+               path = os.path.join("temp/"+names[i]+".mp4", frame)
+               Embedding = model.forward(path, prompt)
+               buffer_dataset.append(Embedding)
+               os.remove(path)
+           
+               print("remaning frames "+str(len(os.listdir("temp/"+names[i]+".mp4"))))
+        
+         elif sources[i] == "perception":
+        
+            for frame in os.listdir("temp/"+names[i]+".mp4"):
+               path = os.path.join("temp/"+names[i]+".mp4", frame)
+               Embedding = model.forward(path, prompt)
+               buffer_dataset.append(Embedding)
+               os.remove(path)
+          
+               print("remaning frames "+str(len(os.listdir("temp/"+names[i]+".mp4"))))
+      except Exception as e:
+         print(e)
+         continue
+    finally:
+          return i, buffer_dataset
+      

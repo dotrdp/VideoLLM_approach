@@ -8,7 +8,7 @@ from decord import VideoReader
 from decord import cpu, gpu
 
 
-def extract_frames(video_path, frames_dir, overwrite=False, start=-1, end=-1, every=1):
+def extract_frames(video_path, frames_dir, overwrite=False, start=-1, end=-1, every=30):
     """
     Extract frames from a video using decord's VideoReader
     :param video_path: path of the video
@@ -60,7 +60,7 @@ def extract_frames(video_path, frames_dir, overwrite=False, start=-1, end=-1, ev
     return saved_count  # and return the count of the images we saved
 
 
-def video_to_frames(video_path, frames_dir, overwrite=False, every=20):
+def video_to_frames(video_path, frames_dir, overwrite=False, every=30):
     """
     Extracts the frames from a video
     :param video_path: path to the video
