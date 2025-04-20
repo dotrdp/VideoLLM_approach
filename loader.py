@@ -8,7 +8,7 @@ def LoadYoutubetDataset():
     with open("data/youtube/0_30_s_youtube_v0_1_cap_processed.json", "r") as f:
         data = json.load(f)
     return data
-def LoadNextQA():
+def LoadNextQA_OE():
     with open("data/NextQA/0_30_s_nextqa_oe_qa_processed.json", "r") as f:
         data = json.load(f)
     return data

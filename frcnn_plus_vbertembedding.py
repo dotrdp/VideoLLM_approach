@@ -46,7 +46,7 @@ class FRCNN_VisualBert_Embedding:
         )
         features = output_dict.get("roi_features")
         model = VisualBertModel.from_pretrained("uclanlp/visualbert-vqa-coco-pre")
-        inputs = self.tokenizer(question, return_tensors="pt")
+        inputs = self.tokenizer(question, return_tensors="pt", truncation=True, padding="max_length", max_length=512)
         
         visual_embeds = features
         visual_token_type_ids = torch.ones(visual_embeds.shape[:-1], dtype=torch.long)
