@@ -16,22 +16,24 @@ vis = SourceFileLoader("visa", "NOTCODEDBYME/visa.py").load_module()
 
 
 class ProjectionLayer:
-    def __init__(self):
-        self.umap = UMAP(n_components=30)
+    def __init__(self, dim):
+        self.umap = UMAP(n_components=dim)
     def forward(self, x):
         x = x.cpu().detach().numpy()
         x = self.umap.fit_transform(x)
         return torch.tensor(x).to(torch.float32).cuda(device=0)
     
 
+# The implementation of VisualBert for embedding allows for context-aware visual grounding Embeddings.
 class FRCNN_VisualBert_Embedding:
     def __init__(self):
         conf = utils.Config
         self.frcnn_cfg = conf.from_pretrained("unc-nlp/frcnn-vg-finetuned")
 
         self.frcnn = visual_cues.GeneralizedRCNN.from_pretrained("unc-nlp/frcnn-vg-finetuned", config=self.frcnn_cfg)
-        self.ProjectionLayer = ProjectionLayer()
+        self.ProjectionLayer = ProjectionLayer(30)
         self.image_preprocess = utils.Preprocess(self.frcnn_cfg)
+        self.tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-uncased")
     def forward(self, path, question):
         images, sizes, scales_yx = self.image_preprocess(path)
         output_dict = self.frcnn(
@@ -44,8 +46,7 @@ class FRCNN_VisualBert_Embedding:
         )
         features = output_dict.get("roi_features")
         model = VisualBertModel.from_pretrained("uclanlp/visualbert-vqa-coco-pre")
-        tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-uncased")
-        inputs = tokenizer(question, return_tensors="pt")
+        inputs = self.tokenizer(question, return_tensors="pt")
         
         visual_embeds = features
         visual_token_type_ids = torch.ones(visual_embeds.shape[:-1], dtype=torch.long)
@@ -59,8 +60,7 @@ class FRCNN_VisualBert_Embedding:
 
         Embedding = model(**inputs).last_hidden_state
         Embedding = Embedding[0, :, :]
-        result = self.ProyectionLayer(Embedding)
-        return result
+        return Embedding 
     #
     def ProyectionLayer(self, Embedding):
         projection = self.ProjectionLayer.forward(Embedding)
