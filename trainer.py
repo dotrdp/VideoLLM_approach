@@ -9,6 +9,7 @@ from videohandler import *
 from IPython.display import clear_output
 
 model = FRCNN_VisualBert_Embedding()
+import shelve
 
 rawdataYoutube = LoadYoutubetDataset()
 rawdataActivityNet = LoadActivityNetDataset()
@@ -21,13 +22,19 @@ print("Final dataset size of "+str(len(training_data))+" videos")
 import warnings
 warnings.filterwarnings("ignore")
    
-buffer_dataset = []
-current = 0
+if os.path.exists("buffer_dataset.pt"):
+   buffer_dataset = torch.load("buffer_dataset.pt")
+else:
+   buffer_dataset = []
+   buffer_dataset.append(0)
+   torch.save(buffer_dataset,"buffer_dataset.pt")
+current = buffer_dataset[0]
 try :
-   for i in tqdm(range(0, len(training_data)), desc="Running Backbone on the training dataset and storing the results"):
+   for i in tqdm(range(current, len(training_data)), desc="Running Backbone on the training dataset and storing the results"):
       current = i
       try:
-
+         buffer_dataset[0] = current
+         torch.save(buffer_dataset, "buffer_dataset.pt")
          prompt = training_data[i][0]
          video = training_data[i][1]
          video_to_frames((video), "temp")
@@ -36,7 +43,7 @@ try :
                for frame in os.listdir("temp/ytb_"+names[i]+".mp4"):
                   path = os.path.join("temp/ytb_"+names[i]+".mp4", frame)
                   Embedding = model.forward(path, prompt)
-                  buffer_dataset.append(Embedding)
+                  buffer_dataset.append({Embedding, labels_data[i]})
                   os.remove(path)
         
                   print("remaning frames "+str(len(os.listdir("temp/ytb_"+names[i]+".mp4"))))
@@ -45,7 +52,7 @@ try :
                for frame in os.listdir("temp/"+names[i]+".mp4"):
                   path = os.path.join("temp/"+names[i]+".mp4", frame)
                   Embedding = model.forward(path, prompt)
-                  buffer_dataset.append(Embedding)
+                  buffer_dataset.append({Embedding, labels_data[i]})
                   os.remove(path)
            
                   print("remaning frames "+str(len(os.listdir("temp/"+names[i]+".mp4"))))
@@ -54,7 +61,7 @@ try :
             for frame in os.listdir("temp/"+names[i]+".mp4"):
                path = os.path.join("temp/"+names[i]+".mp4", frame)
                Embedding = model.forward(path, prompt)
-               buffer_dataset.append(Embedding)
+               buffer_dataset.append({Embedding, labels_data[i]})
                os.remove(path)
            
                print("remaning frames "+str(len(os.listdir("temp/"+names[i]+".mp4"))))
@@ -64,7 +71,7 @@ try :
             for frame in os.listdir("temp/"+names[i]+".mp4"):
                path = os.path.join("temp/"+names[i]+".mp4", frame)
                Embedding = model.forward(path, prompt)
-               buffer_dataset.append(Embedding)
+               buffer_dataset.append({Embedding, labels_data[i]})
                os.remove(path)
           
                print("remaning frames "+str(len(os.listdir("temp/"+names[i]+".mp4"))))
